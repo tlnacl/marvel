@@ -15,7 +15,6 @@ interface DataFlow {
     fun <T : ViewState> actionOn(stateClass: KClass<T>, onAction: ActionFunction<T>, onError: ActionErrorFunction): ActionFlow
     suspend fun onError(error: Exception, currentState: ViewState, flow: ActionFlow) {
         Timber.e("Uncaught error: $error with $currentState")
-        error.printStackTrace()
 //        Swallow error by default
 //        throw error
     }

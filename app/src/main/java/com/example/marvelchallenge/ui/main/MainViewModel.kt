@@ -6,6 +6,7 @@ import com.example.marvelchallenge.uniflow.data.ViewState
 import com.example.marvelchallenge.network.Character
 import com.example.marvelchallenge.uniflow.data.ViewEvent
 import retrofit2.HttpException
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val marvelApi: MarvelApi) : DataFlowBaseViewModel() {
@@ -16,10 +17,8 @@ class MainViewModel @Inject constructor(private val marvelApi: MarvelApi) : Data
             setState(MainViewState(characters))
         },
         onError = { error, _ ->
-            error.printStackTrace()
-            if (error is HttpException || error is IllegalStateException) {
-                sendEvent(ViewEvent.ApiError(error.message!!))
-            }
+            Timber.e(error, "MainViewModel Error")
+            sendEvent(ViewEvent.ApiError(error.message ?: "Unknown Error"))
             setState(ViewState.Failed)
         }
     )

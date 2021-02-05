@@ -22,8 +22,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'API_ENDPOINT', '"https://gateway.marvel.com/"'
-        buildConfigField 'String', 'PUBLIC_KEY', '"b1a1f1e1bd7048b1dee708a50780cb70"'
-        buildConfigField 'String', 'PRIVATE_KEY', '"89ab3ba1ee04e0e97b8ce54fb67343f077c84898"'
+        buildConfigField 'String', 'PUBLIC_KEY', '"replace your key"'
+        buildConfigField 'String', 'PRIVATE_KEY', '"replace your key"'
     }
 
     buildTypes {

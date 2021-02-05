@@ -42,7 +42,6 @@ class MainFragment : Fragment(), CharacterViewHolder.CharacterCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
         val layoutManager = GridLayoutManager(activity, 2)
         characterAdapter = CharacterAdapter(this)
         binding.recyclerView.adapter = characterAdapter
