@@ -1,19 +1,19 @@
-package com.example.marvelchallenge.ui.main
+package com.example.marvelchallenge.ui.detail
 
+import com.example.marvelchallenge.network.Character
 import com.example.marvelchallenge.network.MarvelApi
 import com.example.marvelchallenge.uniflow.DataFlowBaseViewModel
-import com.example.marvelchallenge.uniflow.data.ViewState
-import com.example.marvelchallenge.network.Character
 import com.example.marvelchallenge.uniflow.data.ViewEvent
+import com.example.marvelchallenge.uniflow.data.ViewState
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private val marvelApi: MarvelApi) : DataFlowBaseViewModel() {
-    fun loadCharacters() = action(
+class DetailViewModel  @Inject constructor(private val marvelApi: MarvelApi) : DataFlowBaseViewModel(defaultState = ViewState.Loading) {
+    fun loadCharacter(characterId: Int) = action(
         onAction = {
             setState(ViewState.Loading)
-            val characters = marvelApi.getCharacters().data.results
-            setState(MainViewState(characters))
+            val character = marvelApi.getCharacter(characterId).data.results
+            setState(DetailViewState(character[0]))
         },
         onError = { error, _ ->
             error.printStackTrace()
@@ -24,5 +24,5 @@ class MainViewModel @Inject constructor(private val marvelApi: MarvelApi) : Data
         }
     )
 
-    data class MainViewState(val characters: List<Character>) : ViewState()
+    data class DetailViewState(val character: Character) : ViewState()
 }

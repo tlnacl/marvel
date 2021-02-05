@@ -1,4 +1,4 @@
-package com.example.marvelchallenge.ui.main
+package com.example.marvelchallenge.ui.detail
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.fragment.navArgs
+import coil.load
 import com.example.marvelchallenge.MainApplication
 import com.example.marvelchallenge.R
-import com.example.marvelchallenge.databinding.FragmentMainBinding
+import com.example.marvelchallenge.databinding.FragmentDetailBinding
 import com.example.marvelchallenge.di.provideViewModel
 import com.example.marvelchallenge.network.Character
 import com.example.marvelchallenge.uniflow.data.ViewEvent
@@ -20,40 +19,34 @@ import com.example.marvelchallenge.uniflow.data.ViewState
 import com.example.marvelchallenge.uniflow.onEvents
 import com.example.marvelchallenge.uniflow.onStates
 import com.google.android.material.snackbar.Snackbar
-import timber.log.Timber
 import javax.inject.Inject
 
-class MainFragment : Fragment(), CharacterViewHolder.CharacterCallback {
+class DetailFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var viewModel: MainViewModel
+    lateinit var viewModel: DetailViewModel
+    private lateinit var binding: FragmentDetailBinding
+    val args: DetailFragmentArgs by navArgs()
 
-    private lateinit var characterAdapter: CharacterAdapter
-    private lateinit var binding: FragmentMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as MainApplication).appComponent.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        binding = FragmentDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
-        val layoutManager = GridLayoutManager(activity, 2)
-        characterAdapter = CharacterAdapter(this)
-        binding.recyclerView.adapter = characterAdapter
-        binding.recyclerView.layoutManager = layoutManager
-        binding.retry.setOnClickListener { viewModel.loadCharacters() }
-
         viewModel = provideViewModel(viewModelFactory)
+        binding.toolbar.title = getString(R.string.title_details)
+        binding.toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
         onStates(viewModel) { viewState ->
             when (viewState) {
                 is ViewState.Loading -> renderLoading()
-                is MainViewModel.MainViewState -> renderCharacters(viewState.characters)
+                is DetailViewModel.DetailViewState -> renderCharacter(viewState.character)
                 is ViewState.Failed -> renderFailed()
             }
         }
@@ -63,7 +56,7 @@ class MainFragment : Fragment(), CharacterViewHolder.CharacterCallback {
             }
         }
 
-        viewModel.loadCharacters()
+        viewModel.loadCharacter(args.characterId)
     }
 
     private fun renderFailed() {
@@ -71,18 +64,16 @@ class MainFragment : Fragment(), CharacterViewHolder.CharacterCallback {
         binding.retry.isVisible = true
     }
 
-    private fun renderCharacters(characters: List<Character>) {
+    private fun renderCharacter(character: Character) {
         binding.progressBar.isVisible = false
         binding.retry.isVisible = false
-        characterAdapter.setItems(characters)
+        binding.image.load(character.thumbnail.landscapeAmazing())
+        binding.name.text = character.name
+        binding.description.text = character.description
     }
 
     private fun renderLoading() {
         binding.progressBar.isVisible = true
         binding.retry.isVisible = false
-    }
-
-    override fun onCharacterClicked(character: Character) {
-        findNavController().navigate(MainFragmentDirections.actionMainFragmentToDetailFragment(character.id))
     }
 }

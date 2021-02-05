@@ -11,6 +11,8 @@ open class ViewEvent : ViewData {
         override fun toString(): String = "ViewEvent.Success"
     }
 
+    data class ApiError(val message: String) : ViewEvent()
+
     data class Error(@StringRes val stringRes: Int? = null, val error: Throwable? = null, val state: ViewState? = null) : ViewEvent() {
         constructor(error: Throwable) : this(null, error, null)
 
@@ -36,5 +38,4 @@ open class ViewEvent : ViewData {
     }
 
     data class BadOrWrongState(val currentState: ViewState) : ViewEvent()
-    data class StateUpdate(val currentState: ViewState) : ViewEvent()
 }
